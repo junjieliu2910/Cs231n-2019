@@ -1,0 +1,11 @@
+*.swp
+*.pyc
+.env/*
+venv/
+.vscode/
+*.ipynb_checkpoints/*
+
+# gitignore the built release.
+
+datasets/
+!datasets/*.sh
