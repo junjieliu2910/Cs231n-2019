@@ -246,14 +246,18 @@ class CaptioningRNN(object):
         ###########################################################################
         # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
         V, W = W_embed.shape 
-
         # initial_hidden: [N, H]
         initial_hidden = features.dot(W_proj) + b_proj 
+        if self.cell_type == 'lstm':
+          initial_c = np.zeros(initial_hidden.shape)
         cur_x = np.full((N, 1), self._start)
         for i in range(max_length):
           embedded_x, _ = word_embedding_forward(cur_x, W_embed)
           embedded_x = embedded_x.reshape(N, -1)
-          initial_hidden, _ = rnn_step_forward(embedded_x, initial_hidden, Wx, Wh, b)
+          if self.cell_type == 'rnn':
+            initial_hidden, _ = rnn_step_forward(embedded_x, initial_hidden, Wx, Wh, b)
+          elif self.cell_type == 'lstm':
+            initial_hidden, initial_c, _ = lstm_step_forward(embedded_x, initial_hidden, initial_c, Wx, Wh, b)
           out = initial_hidden.dot(W_vocab) + b_vocab
           idx = np.argmax(out, axis=1)
           captions[:, i] = idx 
